@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação de Magic Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Verificar se o usuário está logado
+        function checkLoginStatus() {
+            fetch('/auth/checkLoginStatus')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.loggedIn) {
+                        window.location.href = '/home';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao verificar status de login:', error);
+                });
+        }
+
+        // Iniciar contagem regressiva
+        function startCountdown(duration, display) {
+            let timer = duration, minutes, seconds;
+            let countdown = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(countdown);
+                    display.textContent = "00:00";
+                    document.getElementById('countdownMessage').classList.add('hidden');
+                    document.getElementById('expiredMessage').classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        window.onload = function() {
+            checkLoginStatus();
+            let fiveMinutes = 60 * 5,
+                display = document.querySelector('#time');
+            startCountdown(fiveMinutes, display);
+        };
+    </script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
+        <h1 class="text-2xl font-bold mb-4 text-gray-800">Confirmação de Magic Link</h1>
+        <p th:text="${message}" class="mb-4 text-gray-600"></p>
+        
+        <div id="countdownMessage" class="mb-4">
+            <p class="text-sm text-gray-500">O link expirará em:</p>
+            <p id="time" class="text-xl font-bold text-indigo-600">05:00</p>
+        </div>
+        
+        <div id="expiredMessage" class="mb-4 hidden">
+            <p class="text-sm text-red-500">O link expirou. Por favor, solicite um novo.</p>
+        </div>
+
+        <a href="/auth/login" class="inline-block bg-indigo-600 text-white font-bold py-2 px-4 rounded hover:bg-indigo-700 transition duration-300">
+            Voltar ao login
+        </a>
+
+        <div class="mt-8">
+            <p class="text-sm text-gray-500">Não recebeu o email?</p>
+            <button onclick="window.location.href='/auth/login'" class="mt-2 text-indigo-600 hover:text-indigo-800 transition duration-300">
+                Reenviar Magic Link
+            </button>
+        </div>
+    </div>
+</body>
+</html>
