@@ -22,16 +22,8 @@
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
             </div>
-        </form>
-        <div class="mt-4">
-            <p class="text-sm text-center text-gray-600">Login via Magic Link</p>
-        </div>
-        <form action="/auth/login" method="POST" class="mt-4">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-            <input type="hidden" name="email" id="magicLinkEmail" />
             <button 
                 type="submit"
-                onclick="document.getElementById('magicLinkEmail').value = document.getElementById('email').value;"
                 class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
                 Enviar Magic Link
@@ -39,20 +31,5 @@
         </form>
         <p th:if="${message}" th:text="${message}" class="mt-4 text-sm text-center text-red-600"></p>
     </div>
-
-    <script>
-        function validateAndSendMagicLink() {
-            const emailInput = document.getElementById('email');
-            const email = emailInput.value.trim();
-            if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                document.getElementById('magicLinkEmail').value = email;
-                return true;
-            } else {
-                alert('Por favor, insira um email válido antes de solicitar o Magic Link.');
-                return false;
-            }
-        }
-        document.querySelector('form[action="/auth/login"]').onsubmit = validateAndSendMagicLink;
-    </script>
 </body>
 </html>

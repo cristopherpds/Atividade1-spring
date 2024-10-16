@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.atividade1.models.ProfessorModel;
@@ -15,11 +18,6 @@ import com.example.atividade1.services.TokenService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
-
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 
 @Controller
 @RequestMapping("/auth")
@@ -39,16 +37,6 @@ public class AuthController {
         return "login"; // Retorna a página de login (login.html)
     }
 
-    /* @GetMapping("/home")
-    public String home(HttpSession session, Model model) {
-        String userEmail = (String) session.getAttribute("userEmail");
-        if (userEmail == null) {
-            return "redirect:/auth/login"; // Redireciona para a página de login se não estiver logado
-        }
-        model.addAttribute("userEmail", userEmail);
-        return "/home";
-    } */
-
     @PostMapping("/login")
     public String login(@RequestParam String email, Model model) throws MessagingException {
         ProfessorModel professor = professorService.findByEmail(email);
@@ -61,14 +49,15 @@ public class AuthController {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             try {
-                helper.setTo(email);
+                helper.setTo("cristopherpds@yopmail.com");
                 helper.setSubject("Tu enlace mágico");
                 helper.setText("<p>Haz clic en el siguiente enlace para iniciar sesión:</p><a href=\"" + link + "\">"
                         + link + "</a>", true);
                 mailSender.send(message);
             } catch (MessagingException e) {
                 e.printStackTrace();
-                return "Error al enviar el correo.";
+                model.addAttribute("message", "Error al enviar el correo.");
+                return "login";
             }
             model.addAttribute("message", "Se ha enviado un enlace mágico a tu correo.");
             return "confirmation";
